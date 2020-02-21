@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="ma_rrt_path_plan" type="main.py" name="ma_rrt_path_plan_node" output="screen">
+        <param name="desiredWaypointsFrequency" value="5" type="int" />
+
+        <param name="publishWaypoints" type="bool" value="true" />
+
+    </node>
+</launch>

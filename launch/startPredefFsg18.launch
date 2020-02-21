@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="ma_rrt_path_plan" type="main.py" name="ma_rrt_path_plan_node" output="screen">
+        <param name="desiredWaypointsFrequency" value="5" type="int" />
+
+        <param name="publishWaypoints" type="bool" value="true" />
+
+        <param name="publishPredefined" type="bool" value="true" />
+        <param name="path" value="$(find ma_rrt_path_plan)/waypoints/" />
+        <param name="filename" value="fsg18_waypoints.csv" />
+    </node>
+</launch>
