@@ -10,7 +10,7 @@ A brief introduction to the main steps of the proposed algorithm is given in my 
 
 ### Notes
 - The algorithm does not utilize the cones' color information, but instead a simple logic is used, which rewards the branches with cones from both sides (see findBestBranch(...) method), and penalizes the branches having cones only from one side. With cone classification information a better rating system can be implemented and applied.
-- Unfortunately I wasn't able to test and see this algorithm working on real hardware, a FS Driverless car, so I am excited if you can bring it the reality and share some videos with me (see section 'Usage')  
+- Unfortunately I wasn't able to test and see this algorithm working on real hardware, a FS Driverless car, so I am excited if you can bring it the reality on any mobile robot and share some videos with me (see section **Usage**)
 
 ### Usage
 - Exploration of [FSG'18 trackdrive circuit](https://www.youtube.com/watch?v=kjssdifs0DQ) in Gazebo.
