@@ -1,28 +1,39 @@
 # RRT with multiple remote goals.
 
-This repository contains the ROS package with code implementation of RRT-based path planning algorithm suitable for exploration of a trackdrive circuit according to Formula Student Driverless competition.
+This repository contains the [ROS](https://www.ros.org/) package with code implementation of RRT-based path planning algorithm suitable for exploration of a trackdrive circuit according to the rules of Formula Student Driverless [competition](https://www.formulastudent.de/fsg/) in Germany. This algorithm is based on my contribution to [E-gnition](https://www.egnition.hamburg/), a FS Team of Technical University Hamburg.
 
 ![Basic animation of the approach](https://github.com/egnitionHamburg/ma_rrt_path_plan/blob/master/anim/drive.gif "RRT with multiple remote goals")
 
-An  example of algorithm usage for exploration of FSG'18 trackdrive can be found [here](https://www.youtube.com/watch?v=kjssdifs0DQ). A brief introduction to the algorithm is given in my [Master's thesis presentation](https://www.youtube.com/watch?v=eOevF5jFSoc). A bit more detailed overview of algorithm steps can be found in [my thesis](https://drive.google.com/file/d/1vniFoNd71E5ITufIgLfM-vc1K-1cDCUu/view).
+A brief introduction to the main steps of the proposed algorithm is given in my Master's thesis presentation [(direct timestamp)](https://youtu.be/eOevF5jFSoc?t=475).
 
-__NOTE__: The algorithm does not use the colors of cones, but instead a simple logic, which penalizes the branches having cones only from one side, and rewards the branches with cones from both sides (see findBestBranch(...) method). With cone classification info a better (and probably a more stable) rating system can be implemented.
+[<img src="https://img.youtube.com/vi/eOevF5jFSoc/hqdefault.jpg" width="50%">](https://youtu.be/eOevF5jFSoc)
 
-## Inputs
+### Notes
+- The algorithm does not utilize the cones' color information, but instead a simple logic is used, which rewards the branches with cones from both sides (see findBestBranch(...) method), and penalizes the branches having cones only from one side. With cone classification information a better rating system can be implemented and applied.
+- Unfortunately I wasn't able to test and see this algorithm working on real hardware, a FS Driverless car, so I am excited if you can bring it the reality and share some videos with me (see section 'Usage')  
+
+### Usage
+- Exploration of [FSG'18 trackdrive circuit](https://www.youtube.com/watch?v=kjssdifs0DQ) in Gazebo.
+- Exploration of [FSG'17 trackdrive circuit](https://www.youtube.com/watch?v=jJAjrCig3yE) in Gazebo.
+- *Your video (feel free to pull-request a link with it here).*
+
+## Inputs, outputs, params
+
+#### Inputs
 - rospy.Subscriber("/map", Map, ...)
 - rospy.Subscriber("/odometry", Odometry, ...)
 
-## Outputs
+#### Outputs
 - rospy.Publisher("/waypoints", WaypointsArray, ...)
 
-## Outputs (Visuals)
+#### Outputs (Visuals)
 - rospy.Publisher("/visual/tree_marker_array", MarkerArray, ...)
 - rospy.Publisher("/visual/best_tree_branch", Marker, ...)
 - rospy.Publisher("/visual/filtered_tree_branch", Marker, ...)
 - rospy.Publisher("/visual/delaunay_lines", Marker, ...)
 - rospy.Publisher("/visual/waypoints", MarkerArray, ...)
 
-## Parameters to tune (main)
+#### Parameters to tune (main)
 - planDistance = 12 m - Maximum length of tree branch
 - expandDistance = 1 m - Length of tree node/step
 - expandAngle = 20 deg - constraining angle for next tree nodes
@@ -31,6 +42,6 @@ __NOTE__: The algorithm does not use the colors of cones, but instead a simple l
 
 ## Licence
 
-#### MIT
+### MIT
 - Use me and my code in any way you want
 - Keep the names and the same licence
