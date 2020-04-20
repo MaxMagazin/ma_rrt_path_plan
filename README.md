@@ -20,7 +20,7 @@ A brief introduction to the main steps of the proposed algorithm is given in my 
 ## Inputs, outputs, params
 
 #### Inputs
-- rospy.Subscriber("/map", Map, ...)
+- rospy.Subscriber("/map", Track, ...)
 - rospy.Subscriber("/odometry", Odometry, ...)
 
 #### Outputs
@@ -34,6 +34,8 @@ A brief introduction to the main steps of the proposed algorithm is given in my 
 - rospy.Publisher("/visual/waypoints", MarkerArray, ...)
 
 #### Parameters to tune (main)
+- `odom_topic` = `/odometry` - The topic to get the odometry information from
+- `world_frame` = `world` - The world frame to use for the visualizations
 - planDistance = 12 m - Maximum length of tree branch
 - expandDistance = 1 m - Length of tree node/step
 - expandAngle = 20 deg - constraining angle for next tree nodes
