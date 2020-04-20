@@ -17,6 +17,9 @@ A brief introduction to the main steps of the proposed algorithm is given in my 
 - Exploration of [FSG'17 trackdrive circuit](https://www.youtube.com/watch?v=jJAjrCig3yE) in Gazebo.
 - *Your video (feel free to pull-request a link with it here).*
 
+#### Vehicle Messages
+Some custom messages are included inside the `ma_rrt_path_plan` package folder. Because the Git repository was setup before the creation of the messages (via a PR from [ekampourakis](https://github.com/ekampourakis/)), the `vehicle_msgs` package folder needs to be moved to the parent folder of the `ma_rrt_path_plan` in order to act as a seperate package and possibly included in the Makefile too.
+
 ## Inputs, outputs, params
 
 #### Inputs
