@@ -18,10 +18,13 @@ A brief introduction to the main steps of the proposed algorithm is given in my 
 - Exploration of [ISCC'21 in Korea Track Mission](https://youtu.be/tF_vQYmdT30) in Real HW (ERP-42) - Jeong Boin
 - *Your video (feel free to pull-request a link with it here).*
 
+#### Vehicle Messages
+Some custom messages are included inside the `ma_rrt_path_plan` package folder. Because the Git repository was setup before the creation of the messages (via a PR from [ekampourakis](https://github.com/ekampourakis/)), the `vehicle_msgs` package folder needs to be moved to the parent folder of the `ma_rrt_path_plan` in order to act as a seperate package and possibly included in the Makefile too.
+
 ## Inputs, outputs, params
 
 #### Inputs
-- rospy.Subscriber("/map", Map, ...)
+- rospy.Subscriber("/map", Track, ...)
 - rospy.Subscriber("/odometry", Odometry, ...)
 
 #### Outputs
@@ -35,6 +38,8 @@ A brief introduction to the main steps of the proposed algorithm is given in my 
 - rospy.Publisher("/visual/waypoints", MarkerArray, ...)
 
 #### Parameters to tune (main)
+- `odom_topic` = `/odometry` - The topic to get the odometry information from
+- `world_frame` = `world` - The world frame to use for the visualizations
 - planDistance = 12 m - Maximum length of tree branch
 - expandDistance = 1 m - Length of tree node/step
 - expandAngle = 20 deg - constraining angle for next tree nodes

@@ -10,10 +10,7 @@ import csv
 
 import ma_rrt
 
-from egn_messages.msg import Map
-from egn_messages.msg import CarSensors
-from egn_messages.msg import WaypointsArray
-from egn_messages.msg import Waypoint
+from vehicle_msgs.msg import TrackCone, Track, Command, Waypoint, WaypointsArray
 
 from visualization_msgs.msg import Marker
 from visualization_msgs.msg import MarkerArray
@@ -45,14 +42,24 @@ class MaRRTPathPlanNode:
         if rospy.has_param('~filename'):
             self.filename = rospy.get_param('~filename')
 
+        if rospy.has_param('~odom_topic'):
+            self.odometry_topic = rospy.get_param('~odom_topic')
+        else:
+            self.odometry_topic = "/odometry"
+
+        if rospy.has_param('~world_frame'):
+            self.world_frame = rospy.get_param('~world_frame')
+        else:
+            self.world_frame = "world"
+
         waypointsFrequency = rospy.get_param('~desiredWaypointsFrequency', 5)
         self.waypointsPublishInterval = 1.0 / waypointsFrequency
         self.lastPublishWaypointsTime = 0
 
         # All Subs and pubs
-        rospy.Subscriber("/map", Map, self.mapCallback)
-        rospy.Subscriber("/odometry", Odometry, self.odometryCallback)
-        # rospy.Subscriber("/car_sensors", CarSensors, self.carSensorsCallback)
+        rospy.Subscriber("/track", Track, self.mapCallback)
+        rospy.Subscriber(self.odometry_topic, Odometry, self.odometryCallback)
+        rospy.Subscriber("/dvsim/cmd", Command, self.carSensorsCallback)
 
         # Create publishers
         self.waypointsPub = rospy.Publisher("/waypoints", WaypointsArray, queue_size=0)
@@ -89,7 +96,7 @@ class MaRRTPathPlanNode:
         self.filteredBestBranch = []
         self.discardAmount = 0
 
-        # print("MaRRTPathPlanNode Constructor has been called")
+        print("MaRRTPathPlanNode Constructor has been called")
 
     def __del__(self):
         print('MaRRTPathPlanNode: Destructor called.')
@@ -107,20 +114,20 @@ class MaRRTPathPlanNode:
         self.carPosYaw = yaw
         #print "Estimated processing odometry callback: {0} ms".format((time.time() - start)*1000)
 
-    def carSensorsCallback(self, carSensors):
+    def carSensorsCallback(self, command):
         # rospy.loginfo("carSensorsCallback")
 
         # start = time.time()
-        self.steerAngle = carSensors.steerAngle
+        # The ackermann angle [rad]
+        self.steerAngle = math.degrees((command.theta_l + command.theta_r) / 2.0)
 
         #print "Estimated processing map callback: {0} ms".format((time.time() - start)*1000);
 
-    def mapCallback(self, map):
-        self.map = map
+    def mapCallback(self, track):
+        self.map = track.cones
 
     def sampleTree(self):
         # sampleTreeStartTime = time.time()
-
         if self.loopClosure and len(self.savedWaypoints) > 0:
             # print("Publish savedWaypoints/predifined waypoints, return")
             self.publishWaypoints()
@@ -222,7 +229,7 @@ class MaRRTPathPlanNode:
     def mergeWaypoints(self, newWaypoints):
         # print "mergeWaypoints:", "len(saved):", len(self.savedWaypoints), "len(new):", len(newWaypoints)
         if not newWaypoints:
-            return;
+            return
 
         maxDistToSaveWaypoints = 2.0
         maxWaypointAmountToSave = 2
@@ -371,7 +378,7 @@ class MaRRTPathPlanNode:
 
         # print "publishWaypoints(): start"
         waypointsArray = WaypointsArray()
-        waypointsArray.header.frame_id = "world"
+        waypointsArray.header.frame_id = self.world_frame
         waypointsArray.header.stamp = rospy.Time.now()
 
         waypointsArray.preliminaryLoopClosure = self.preliminaryLoopClosure
@@ -417,7 +424,7 @@ class MaRRTPathPlanNode:
         markerArray = MarkerArray()
 
         savedWaypointsMarker = Marker()
-        savedWaypointsMarker.header.frame_id = "world"
+        savedWaypointsMarker.header.frame_id = self.world_frame
         savedWaypointsMarker.header.stamp = rospy.Time.now()
         savedWaypointsMarker.lifetime = rospy.Duration(1)
         savedWaypointsMarker.ns = "saved-publishWaypointsVisuals"
@@ -441,7 +448,7 @@ class MaRRTPathPlanNode:
 
         if newWaypoints is not None:
             newWaypointsMarker = Marker()
-            newWaypointsMarker.header.frame_id = "world"
+            newWaypointsMarker.header.frame_id = self.world_frame
             newWaypointsMarker.header.stamp = rospy.Time.now()
             newWaypointsMarker.lifetime = rospy.Duration(1)
             newWaypointsMarker.ns = "new-publishWaypointsVisuals"
@@ -544,7 +551,7 @@ class MaRRTPathPlanNode:
             return
 
         marker = Marker()
-        marker.header.frame_id = "world"
+        marker.header.frame_id = self.world_frame
         marker.header.stamp = rospy.Time.now()
         marker.lifetime = rospy.Duration(1)
         marker.ns = "publishDelaunayLinesVisual"
@@ -663,7 +670,7 @@ class MaRRTPathPlanNode:
 
     def publishBestBranchVisual(self, nodeList, leafNode):
         marker = Marker()
-        marker.header.frame_id = "world"
+        marker.header.frame_id = self.world_frame
         marker.header.stamp = rospy.Time.now()
         marker.lifetime = rospy.Duration(0.2)
         marker.ns = "publishBestBranchVisual"
@@ -699,7 +706,7 @@ class MaRRTPathPlanNode:
             return
 
         marker = Marker()
-        marker.header.frame_id = "world"
+        marker.header.frame_id = self.world_frame
         marker.header.stamp = rospy.Time.now()
         marker.lifetime = rospy.Duration(0.2)
         marker.ns = "publisshFilteredBranchVisual"
@@ -733,7 +740,7 @@ class MaRRTPathPlanNode:
 
         # tree lines marker
         treeMarker = Marker()
-        treeMarker.header.frame_id = "world"
+        treeMarker.header.frame_id = self.world_frame
         treeMarker.header.stamp = rospy.Time.now()
         treeMarker.ns = "rrt"
 
@@ -760,7 +767,7 @@ class MaRRTPathPlanNode:
 
         # leaves nodes marker
         leavesMarker = Marker()
-        leavesMarker.header.frame_id = "world"
+        leavesMarker.header.frame_id = self.world_frame
         leavesMarker.header.stamp = rospy.Time.now()
         leavesMarker.lifetime = rospy.Duration(0.2)
         leavesMarker.ns = "rrt-leaves"
@@ -803,7 +810,7 @@ class MaRRTPathPlanNode:
         frontDistSq = frontDist ** 2
 
         frontConeList = []
-        for cone in map.cones:
+        for cone in map:
             if (headingVectorOrt[0] * (cone.y - carPosBehindPoint[1]) - headingVectorOrt[1] * (cone.x - carPosBehindPoint[0])) < 0:
                 if ((cone.x - self.carPosX) ** 2 + (cone.y - self.carPosY) ** 2) < frontDistSq:
                     frontConeList.append(cone)
@@ -818,7 +825,7 @@ class MaRRTPathPlanNode:
     def getConesInRadius(self, map, x, y, radius):
         coneList = []
         radiusSq = radius * radius
-        for cone in map.cones:
+        for cone in map:
             if ((cone.x - x) ** 2 + (cone.y - y) ** 2) < radiusSq:
                 coneList.append(cone)
         return coneList

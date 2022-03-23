@@ -13,7 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   message_filters
   message_generation
-  egn_messages
+  vehicle_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -71,6 +71,6 @@ install(DIRECTORY
 install(PROGRAMS
     src/main.py
     src/MaRRTPathPlanNode.py
-    src/inc/ma_rrt.py
+    src/ma_rrt.py
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )

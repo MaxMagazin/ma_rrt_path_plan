@@ -1,0 +1,14 @@
+<package format="2">
+    <name>vehicle_msgs</name>
+    <version>0.0.1</version>
+    <description>Messages for controlling the vehicle</description>
+    <maintainer email="ekampourakis@ceid.upatras.gr">Emmanouil Kampourakis</maintainer>
+    <license>TODO</license>
+
+    <buildtool_depend>catkin</buildtool_depend>
+
+    <build_depend>message_generation</build_depend>
+    <exec_depend>message_runtime</exec_depend>
+
+    <depend>std_msgs</depend>
+</package>
